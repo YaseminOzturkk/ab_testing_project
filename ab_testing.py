@@ -8,12 +8,10 @@
 
 # Facebook kısa süre önce mevcut "maximumbidding" adı verilen teklif verme türüne alternatif
 # olarak yeni bir teklif türü olan "average bidding"’i tanıttı. Müşterilerimizden biri olan bombabomba.com,
-# bu yeni özelliği test etmeye karar verdi veaveragebidding'in maximumbidding'den daha fazla dönüşüm
+# bu yeni özelliği test etmeye karar verdi ve averagebidding'in maximumbidding'den daha fazla dönüşüm
 # getirip getirmediğini anlamak için bir A/B testi yapmak istiyor.A/B testi 1 aydır devam ediyor ve
 # bombabomba.com şimdi sizden bu A/B testinin sonuçlarını analiz etmenizi bekliyor.Bombabomba.com için
 # nihai başarı ölçütü Purchase'dır. Bu nedenle, istatistiksel testler için Purchase metriğine odaklanılmalıdır.
-
-
 
 
 #####################################################
@@ -29,7 +27,6 @@
 # Click: Görüntülenen reklama tıklama sayısı
 # Purchase: Tıklanan reklamlar sonrası satın alınan ürün sayısı
 # Earning: Satın alınan ürünler sonrası elde edilen kazanç
-
 
 
 #####################################################
@@ -52,8 +49,6 @@
 # Not:
 # - Normallik sağlanmıyorsa direkt 2 numara. Varyans homojenliği sağlanmıyorsa 1 numaraya arguman girilir.
 # - Normallik incelemesi öncesi aykırı değer incelemesi ve düzeltmesi yapmak faydalı olabilir.
-
-
 
 
 #####################################################
@@ -103,7 +98,6 @@ def check_df(dataframe, head=5):
     print(dataframe.describe().T)
 check_df(df_control)
 check_df(df_test)
-
 
 
 # Adım 3: Analiz işleminden sonra concat metodunu kullanarak kontrol ve test grubu verilerini birleştiriniz.
