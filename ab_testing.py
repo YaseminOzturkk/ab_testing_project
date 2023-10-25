@@ -1,61 +1,59 @@
 #####################################################
-# AB Testi ile BiddingYöntemlerinin Dönüşümünün Karşılaştırılması
+# Comparison of AB Test and Conversion of Bidding Methods
 #####################################################
 
 #####################################################
-# İş Problemi
+# Business Problem
 #####################################################
 
-# Facebook kısa süre önce mevcut "maximumbidding" adı verilen teklif verme türüne alternatif
-# olarak yeni bir teklif türü olan "average bidding"’i tanıttı. Müşterilerimizden biri olan bombabomba.com,
-# bu yeni özelliği test etmeye karar verdi ve averagebidding'in maximumbidding'den daha fazla dönüşüm
-# getirip getirmediğini anlamak için bir A/B testi yapmak istiyor.A/B testi 1 aydır devam ediyor ve
-# bombabomba.com şimdi sizden bu A/B testinin sonuçlarını analiz etmenizi bekliyor.Bombabomba.com için
-# nihai başarı ölçütü Purchase'dır. Bu nedenle, istatistiksel testler için Purchase metriğine odaklanılmalıdır.
+# Facebook recently introduced a new bidding type called "average bidding" as an alternative to the existing "maximum bidding" bidding type. 
+# One of our clients, bombabomba.com, has decided to test this new feature to determine whether average bidding brings in more conversions than maximum bidding. 
+# The A/B test has been running for one month, and bombabomba.com now expects you to analyze the results of this A/B test.
+# The ultimate success metric for bombabomba.com is "Purchase." Therefore, the focus should be on the "Purchase" metric for statistical testing.
 
 
 #####################################################
-# Veri Seti Hikayesi
+# The story of the dataset
 #####################################################
 
-# Bir firmanın web site bilgilerini içeren bu veri setinde kullanıcıların gördükleri ve tıkladıkları
-# reklam sayıları gibi bilgilerin yanı sıra buradan gelen kazanç bilgileri yer almaktadır.Kontrol ve Test
-# grubu olmak üzere iki ayrı veri seti vardır. Bu veri setleriab_testing.xlsxexcel’inin ayrı sayfalarında yer
-# almaktadır. Kontrol grubuna Maximum Bidding, test grubuna AverageBidding uygulanmıştır.
+In this data set, which includes the website information of a company, there is information such as the number of advertisements that users see and click, 
+# as well as earnings information from here. There are two separate data sets, the control and test groups. These datasets are in separate sheets of 
+# the ab_testing.xlsx Excel. Maximum Bidding was applied to the control group and Average Bidding was applied to the test group.
 
-# impression: Reklam görüntüleme sayısı
-# Click: Görüntülenen reklama tıklama sayısı
-# Purchase: Tıklanan reklamlar sonrası satın alınan ürün sayısı
-# Earning: Satın alınan ürünler sonrası elde edilen kazanç
+# Variables:
 
-
-#####################################################
-# Proje Görevleri
-#####################################################
-
-######################################################
-# AB Testing (Bağımsız İki Örneklem T Testi)
-######################################################
-
-# 1. Hipotezleri Kur
-
-# 2. Varsayım Kontrolü
-#   - 1. Normallik Varsayımı (shapiro)
-#   - 2. Varyans Homojenliği (levene)
-# 3. Hipotezin Uygulanması
-#   - 1. Varsayımlar sağlanıyorsa bağımsız iki örneklem t testi
-#   - 2. Varsayımlar sağlanmıyorsa mannwhitneyu testi
-# 4. p-value değerine göre sonuçları yorumla
-# Not:
-# - Normallik sağlanmıyorsa direkt 2 numara. Varyans homojenliği sağlanmıyorsa 1 numaraya arguman girilir.
-# - Normallik incelemesi öncesi aykırı değer incelemesi ve düzeltmesi yapmak faydalı olabilir.
+# Impression: Number of ad views
+# Click: Number of clicks on the displayed ad
+# Purchase: Number of products purchased after ads clicked
+# Earning: Earnings after purchased products
 
 
 #####################################################
-# Görev 1:  Veriyi Hazırlama ve Analiz Etme
+# Project Tasks
 #####################################################
 
-# Gerekli Kütüphaneler
+####################### ####
+# AB Testing (Independent Two Sample T Test)
+####################### ####
+
+# 1. Establish Hypotheses
+# 2. Assumption Checking
+# 2.1. Normality Assumption (shapiro)
+# 2.2 Variance Homogeneity (levene)
+# 3. Application of Hypothesis
+# 3.1. Independent two sample t test if assumptions are met
+# 3.2. Mannwhitneyu test if assumptions are not met
+# 4. Interpret the results according to the p-value
+# Note:
+# - If normality is not achieved, direct number 2. If variance homogeneity is not achieved, argument number 1 is entered.
+# - It may be useful to perform outlier review and correction before normality review.
+
+
+#####################################################
+# Task 1: Preparing and Analyzing Data
+#####################################################
+
+# Library Imports and Dataset Reading
 
 import itertools
 import numpy as np
@@ -72,8 +70,8 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', 10)
 pd.set_option('display.float_format', lambda x: '%.5f' % x)
 
-# Adım 1:  ab_testing_data.xlsx adlı kontrol ve test grubu verilerinden oluşan veri setini okutunuz.
-# Kontrol ve test grubu verilerini ayrı değişkenlere atayınız.
+# Step 1: Step 1: Read the dataset ab_testing_data.xlsx consisting of control and test group data.
+# Assign control and test group data to separate variables.
 
 control_df = pd.read_excel("ABTesti/ab_testing.xlsx", sheet_name="Control Group")
 test_df = pd.read_excel("ABTesti/ab_testing.xlsx", sheet_name="Test Group")
@@ -81,7 +79,7 @@ test_df = pd.read_excel("ABTesti/ab_testing.xlsx", sheet_name="Test Group")
 df_control = control_df.copy()
 df_test = test_df.copy()
 
-# Adım 2: Kontrol ve test grubu verilerini analiz ediniz.
+# Step 2: Analyze control and test group data.
 
 def check_df(dataframe, head=5):
     print("###################### SHAPE #########")
@@ -100,7 +98,7 @@ check_df(df_control)
 check_df(df_test)
 
 
-# Adım 3: Analiz işleminden sonra concat metodunu kullanarak kontrol ve test grubu verilerini birleştiriniz.
+# Step 3: After the analysis process, combine the control and test group data using the concat method.
 
 df_control["Group"] = 'Control'
 df_test["Group"] = 'Test'
@@ -111,106 +109,106 @@ df.head(50)
 
 
 #####################################################
-# Görev 2:  A/B Testinin Hipotezinin Tanımlanması
+# Task2: Defining the Hypothesis of A/B Testing
 #####################################################
 
-# Adım 1: Hipotezi tanımlayınız.
+# Step 1: Define the hypothesis.
 
-# H0: M1 = M2 (Kontrol grubu ile test grubunun satın alma ortalamaları arasında ist. olarak anlamlı bir fark yoktur.)
-# H1: M1 != M2 (Kontrol grubu ile test grubunun satın alma ortalamaları arasında ist. olarak anlamlı bir fark vardır)
+# H0: M1 = M2 (There is no statistically significant difference between the purchasing averages of the control group and the test group.)
+# H1: M1 != M2 (There is a statistically significant difference between the purchasing averages of the control group and the test group.)
 
 
-# Adım 2: Kontrol ve test grubu için purchase(kazanç) ortalamalarını analiz ediniz
+# Step 2: Analyze the purchase (earning) averages for the control and test group.
 
 df.groupby('Group').agg({'Purchase': "mean"})
 
 
 #####################################################
-# GÖREV 3: Hipotez Testinin Gerçekleştirilmesi
+# Task3: Performing Hypothesis Testing
 #####################################################
 
 ######################################################
-# AB Testing (Bağımsız İki Örneklem T Testi)
+# AB Testing
 ######################################################
 
-# Adım 1: Hipotez testi yapılmadan önce varsayım kontrollerini yapınız.
-# Bunlar Normallik Varsayımı ve Varyans Homojenliğidir.
-
-# Kontrol ve test grubunun normallik varsayımına uyup uymadığını Purchase değişkeni üzerinden ayrı ayrı test ediniz
-
-############################
-# Normallik Varsayımı
-############################
-
-# H0: Normal dağılım varsayımı sağlanmaktadır.
-# H1:..sağlanmamaktadır.
-
-
-test_stat, pvalue = shapiro(df.loc[df["Group"] == "Control", "Purchase"])
-print('Test Stat = %.4f, p-value = %.4f' % (test_stat, pvalue))
-
-# p-value = 0.5891
-# p-value < ise 0.05'ten HO RED.
-# p-value < değilse 0.05 H0 REDDEDILEMEZ.
-
-#### Normal dağılım varsayımına göre HO reddedilemez, Yani normal dağılıyor.
-
+# Step 1: Perform hypothesis checks before hypothesis testing.
+# These are Assumption of Normality and Homogeneity of Variance. Test separately whether the control and test groups
+# comply with the assumption of normality over the Purchase variable.
 
 ############################
-# Varyans Homojenligi Varsayımı
+# Normality Assumption
 ############################
 
-# H0: Varyanslar Homojendir
-# H1: Varyanslar Homojen Değildir
+# H0: Normal distribution assumption is provided.
+# H1: Normal distribution assumption is not provided.
+# p < 0.05 H0 REJECT , p > 0.05 H0 CANNOT REJECT
+
+
+test_stat, test_pvalue = shapiro(df.loc[df['group'] == 'control', 'Purchase'])
+print('Test Stat = %.4f, p-value = %.4f' % (test_stat, control_pvalue))
+# Test Stat = 0.9773, p-value = 0.5891
+
+test_stat, test_pvalue = shapiro(df.loc[df['group'] == 'test', 'Purchase'])
+print('Test Stat = %.4f, p-value = %.4f' % (test_stat, test_pvalue))
+# Test Stat = 0.9589, p-value = 0.1541
+
+
+# Note: 
+# The p-value of the Control Group and Test Group is above 0.05. In this case, we cannot reject the H0 hypothesis. The assumption of normality is provided.
+
+
+############################
+# Variance Homogeneity
+############################
+
+# H0: Variances are homogeneous.
+# H1: Variances are not homogeneous.
+# p < 0.05 H0 REJECT , p > 0.05 H0 CANNOT REJECT
 
 test_stat, pvalue = levene(df.loc[df["Group"] == "Control", "Purchase"],
                            df.loc[df["Group"] == "Test", "Purchase"])
 print('Test Stat = %.4f, p-value = %.4f' % (test_stat, pvalue))
+# Test Stat = 2.6393, p-value = 0.1083
+
+# Note: 
+# Since the p-value is greater than 0.05, we cannot reject the H0 hypothesis. In this case, the variance is homogeneous.
 
 
-# p-value = 0.1083
-# p-value < ise 0.05 'ten HO RED.
-# p-value < değilse 0.05 H0 REDDEDILEMEZ.
+# Step 2: Select the appropriate test according to the Normality Assumption and Variance Homogeneity results.
 
-#### Normal dağılım varsayımına göre HO reddedilemez, Yani normal dağılıyor.
-
-
-# Adım 2: Normallik Varsayımı ve Varyans Homojenliği sonuçlarına göre uygun testi seçiniz
-
-################  CEVAP #######################
-# Her iki varsayım da sağlandığı için bağımsız iki örneklem t testini(parametrik test) uygulayabiliriz.
+################  ANSWER  #######################
+# Since both assumptions are satisfied, we will apply the independent two-sample t-test (parametric test).
 
 
-# Adım 3: Test sonucunda elde edilen p_value değerini göz önünde bulundurarak kontrol ve test grubu satın alma
-# ortalamaları arasında istatistiki olarak anlamlı bir fark olup olmadığını yorumlayınız.
+# Step 3: Considering the p_value obtained as a result of the test, interpret whether there is a statistically
+# significant difference between the purchasing averages of the control and test groups.
 
 test_stat, pvalue = ttest_ind(df.loc[df["Group"] == "Control", "Purchase"],
                               df.loc[df["Group"] == "Test", "Purchase"],
                               equal_var=True)
 
 print('Test Stat = %.4f, p-value = %.4f' % (test_stat, pvalue))
+# Test Stat = 0.9416, p-value = 0.3493
 
-
-################  CEVAP #######################
+################  ANSWER #######################
 # p-value = 0.3493
-# p-value değeri 0.005'ten büyüktür. Bu durumda HO hipotezini reddedemeyiz. Bu da kontrol ve test gruplarının satın alma
-# ortalamaları arasında istatistiksel olarak anlamlı bir fark olmadığını gösterir.
+# The p-value value is greater than 0.005. In this case, we cannot reject the HO hypothesis. 
+# This shows that there is no statistically significant difference between the purchasing averages of the control and test groups.
 
 
 ##############################################################
-# GÖREV 4 : Sonuçların Analizi
+# Task 4: Analysis of Results
 ##############################################################
 
-# Adım 1: Hangi testi kullandınız, sebeplerini belirtiniz.
-###################### CEVAP ##############################
-# Normallik Varsayımı aşamasında scipy kütüphanesindeki shapiro metodunu kullandık,
-# Varyans Homojenliği aşamasında scipy kütüphanesinden levene metodunu kullandık ve elde ettiğimiz
-# p_value değeri'lerinin varsayımları sağladığını gördük ve bağımsız iki örnekli t testinin (parametrik test) uygun
-# olduğuna karar verdik.
+# Step 1: Which test did you use, state the reasons.
+###################### ANSWER ##############################
+# In the Normality Assumption stage, we used the Shapiro method in the Scipy library,
+# In the Variance Homogeneity stage, we used the Levene method from the Scipy Library and
+# We saw that the p-values we obtained satisfied the assumptions and decided that an independent two-sample t-test (parametric test) was appropriate.
 
 
 
-# Adım 2: Elde ettiğiniz test sonuçlarına göre müşteriye tavsiyede bulununuz.
-
-# Sonuç olarak bombabomba.com'un yeni bir özelliği test etmek için yaptığı A/B testinde istatistiksel açıdan anlamlı bir
-# fark bulunmamakta. Anlamlı bir fark olmadığından müşteriye her iki yöntemi de kullanmasını önerebiliriz.
+Step 2: Advise the customer according to the test results you have obtained.
+###################### ANSWER ##############################
+# As a result, there is no statistically significant difference in the A/B test that bombabomba.com conducted to test a new feature. 
+# Since there is no significant difference, we can recommend the customer to use both methods.
